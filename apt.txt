@@ -1,0 +1,4 @@
+libxml2-dev
+libxslt-dev
+libjpeg-dev
+zlib1g-dev 
