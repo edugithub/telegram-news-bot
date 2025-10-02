@@ -3,6 +3,10 @@ import logging
 from telegram import Update
 from telegram.ext import Application, MessageHandler, filters, ContextTypes
 import trafilatura  # usando trafilatura para evitar problemas de lxml/newspaper3k en Python 3.13
+import telegram, logging
+
+logging.basicConfig(level=logging.INFO)
+logging.info(f"PTB version loaded: {telegram.__version__}")
 
 # Token desde variables de entorno en Render
 BOT_TOKEN = os.environ["BOT_TOKEN"]
