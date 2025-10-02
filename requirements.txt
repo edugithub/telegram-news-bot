@@ -1,3 +1,2 @@
 python-telegram-bot==20.7
-newspaper3k==0.2.8
-lxml==4.9.3
+trafilatura==1.8.0
