@@ -1,19 +1,11 @@
 import os, logging
+import trafilatura
 from telegram import Update
 from telegram.ext import Application, MessageHandler, filters, ContextTypes
-from newspaper import Article, Config
 
 BOT_TOKEN = os.environ["BOT_TOKEN"]
 
 logging.basicConfig(level=logging.INFO)
-
-UA = os.environ.get(
-    "USER_AGENT",
-    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0 Safari/537.36"
-)
-cfg = Config()
-cfg.browser_user_agent = UA
-cfg.request_timeout = 15
 
 def analyze_content(text: str):
     t = text.lower()
@@ -49,16 +41,13 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     url = urls[0]
     await update.message.reply_text(f"🔎 Leyendo noticia...\n{url}")
     try:
-        art = Article(url, config=cfg)
-        art.download()
-        art.parse()
-        content = (art.text or "")[:2000]
-        trigger, impact, suggestion = analyze_content(content)
-        title = art.title or "Sin título"
+        downloaded = trafilatura.fetch_url(url)
+        content = trafilatura.extract(downloaded) if downloaded else ""
+        trigger, impact, suggestion = analyze_content(content or "")
         resumen = f"""⚡ Trigger: {trigger}
 📊 Impacto esperado: {impact}
 ✅ Sugerencia: {suggestion}
-📰 Título: {title}"""
+📰 URL: {url}"""
         await update.message.reply_text(resumen)
     except Exception as e:
         await update.message.reply_text(f"⚠️ No pude analizar la noticia: {e}")
